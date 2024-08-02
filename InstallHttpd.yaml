@@ -1,0 +1,15 @@
+- hosts: Slave1
+  become: true
+  tasks:
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+    - name: Copy Index.html
+      copy:
+        src: ~/index.html
+        dest: /var/www/html/index.html
+    - name: Start service
+      service:
+        name: httpd
+        state: started
