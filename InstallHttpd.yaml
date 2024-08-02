@@ -13,3 +13,7 @@
       service:
         name: httpd
         state: started
+# In command line we can also perform the Below commands to install
+# ansible Slave1 -b -m yum -a "name=httpd state=present"
+# ansible Slave1 -b -m copy -a "src=~/index.html dest=/var/www/html/index.html"
+# ansible Slave1 -b -m service  -a "name=httpd state=started"
