@@ -1,0 +1,40 @@
+- hosts: Slave1
+  gather_facts: no
+  # Gathers information for Setup about server details
+  become: true
+  # It enables sudo privilages
+  vars:
+    name: Lokesh
+  # It creates a variable that we can refer in index.html while using ansible or any where in playbook yaml file
+  tasks:
+  - name: Install httpd
+    yum:
+      name: httpd
+      state: present
+    tags:
+  # It creates a reference while performing ansible you can specify only this task to perform 
+  # ex: ansible-playbook <file name> --tags install
+    - install
+  - name: print Variable name
+    debug:
+  # It is a modules which helps to print the message or varibale
+      msg: "Variable value is {{name}}"
+  - name: Copy Index.html
+    template:
+  # this modules helps to copy and proccess the variable. With service module we can do it
+      src: ~/index.html
+      dest: /var/www/html/index.html
+    tags:
+    - copy
+    notify:
+  # it will help to notify the handlers. If notified only handlers task will be performed
+    - Start service
+  handlers:
+# Handlers are tasks when performed only any change is happend in file like where we notified task is present
+  - name: Start service
+    service:
+      name: httpd
+      state: started
+    tags:
+    - start
+    - install
