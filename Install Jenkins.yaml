@@ -1,0 +1,41 @@
+- hosts: Slave1
+  gather_facts: no
+  become: true
+  tasks:
+  - name: Install Java
+    yum:
+      name: java-17
+      state: present
+    tags:
+    - java
+  - name: Download repos
+    get_url:
+      url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+      dest: /etc/yum.repos.d/jenkins.repo
+  - name: Import jenkins key
+    rpm_key:
+      key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+      state: present
+  - name: Install Jenkins
+    yum:
+      name: jenkins
+      state: present
+  - name: Start Jenkins service
+    systemd:
+      name: jenkins
+      state: started
+  - name: Enable jenkins
+    systemd:
+      name: jenkins
+      enabled: yes
+  - name: Sleep playbook until jenkins exexution
+    wait_for:
+      delay: 5
+      port: 8080
+  - name: Cat jenkins password and registering to variable
+    shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+    register: jenkinspasswd
+  - name: Print jenkins password
+    debug:
+      var: jenkinspasswd.stdout
+
